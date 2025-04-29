@@ -151,6 +151,10 @@ class HandeyeSampler:
         """
         return self.samples
 
+    def clear_samples(self) -> None:
+        """Clear all samples."""
+        self.samples.samples = []
+
     @staticmethod
     def _filepath_for_samplelist(name) -> pathlib.Path:
         return SAMPLES_DIRECTORY / f'{name}.samples'

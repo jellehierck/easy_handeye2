@@ -138,6 +138,19 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 </launch>
 ```
 
+#### Taking multiple samples
+
+An action server can be used to take samples automatically at a specified rate.
+
+To use the action server, start the calibration launch file and call the action server (e.g. using the following example command):
+
+```bash
+ros2 action send_goal /easy_handeye2/calibration/take_multiple_samples easy_handeye2_msgs/action/TakeMultipleSamples "{sample_frequency: 1.0, max_duration: 5.0, max_samples: 7, defer_action_time: 3.0, clear_samples_before: true}"
+```
+
+See [`easy_handeye2_msgs/action/calibration/TakeMultipleSamples.action`](./easy_handeye2_msgs/action/calibration/TakeMultipleSamples.action) for details on the goal request parameters.
+
+After multiple samples are taken, the calibration result can be obtained normally.
 
 #### Moving the robot
 

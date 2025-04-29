@@ -1,0 +1,38 @@
+### TakeMultipleSamples.action
+# Take multiple samples at a specified rate.
+
+### Request
+
+# [REQUIRED] Sample rate in Hz.
+float64 sample_frequency
+
+# max_samples and max_duration are used to determine how many samples are taken at most.
+# At least one of them must be set to collect any samples.
+# Whichever parameter results in the least amount of samples is used.
+# E.g. if sample_frequency * max_duration < max_samples, then max_duration limits the number of samples.
+# E.g. if sample_frequency * max_samples > max_duration, then max_samples limits the number of samples.
+
+# Max number of samples to take.
+# Set to 0 (the default) to disable.
+uint32 max_samples 0
+
+# Max duration in seconds to collect samples for.
+# Set to 0 (the default) to disable.
+float64 max_duration 0.0
+
+# Whether to clear current samples before starting to take these multiple samples
+bool clear_samples_before false
+
+# How much time to wait before starting to execute the action after the request is accepted
+float64 defer_action_time 0.0
+
+---
+### Goal response
+
+# List of all samples taken.
+SampleList samples
+
+---
+### Feedback response
+
+SampleList partial_samples

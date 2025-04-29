@@ -9,6 +9,7 @@ if("$ENV{ROS_DISTRO}" STRGREATER_EQUAL "iron")
 endif()
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(action_msgs REQUIRED) # should be automatically added, it doesn't because we have subdirs in action :\
 
 rosidl_generate_interfaces(${PROJECT_NAME}
         msg/HandeyeCalibration.msg
@@ -29,7 +30,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
         srv/robot_movements/SelectTargetPose.srv
         srv/robot_movements/PlanToSelectedTargetPose.srv
         srv/robot_movements/ExecutePlan.srv
-        DEPENDENCIES std_msgs geometry_msgs ${SERVICE_MSGS_DEPS}
+        action/calibration/TakeMultipleSamples.action
+        DEPENDENCIES std_msgs geometry_msgs action_msgs ${SERVICE_MSGS_DEPS}
 )
 
 ament_package()
