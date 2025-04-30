@@ -318,7 +318,38 @@ class HandeyeServer(rclpy.node.Node):
             # Wait until the next sample can be taken
             sample_rate.sleep()
 
-        # All samples are taken, do one final check that the action is still going
+        self.get_logger().info("All samples are taken!")
+
+        # All samples are taken, construct the result message
+        goal_result = easy_handeye2_msgs.action.TakeMultipleSamples.Result(samples=self._retrieve_sample_list())
+
+        # Check if the calibration should be computed
+        if goal_request.compute_calibration:
+            self.get_logger().info("Computing calibration result...")
+            compute_calibration_req = easy_handeye2_msgs.srv.ComputeCalibration.Request()
+            compute_calibration_res = easy_handeye2_msgs.srv.ComputeCalibration.Response()
+            compute_calibration_res= self.compute_calibration(compute_calibration_req, compute_calibration_res)
+            goal_result.calibration_valid = compute_calibration_res.valid
+            goal_result.calibration_result = compute_calibration_res.calibration
+
+            # Also check if the calibration should be saved
+            if goal_request.save_calibration:
+                self.get_logger().info("Saving calibration result to disk...")
+                save_calibration_req = easy_handeye2_msgs.srv.SaveCalibration.Request()
+                save_calibration_res = easy_handeye2_msgs.srv.SaveCalibration.Response()
+                save_calibration_res= self.save_calibration(save_calibration_req, save_calibration_res)
+                goal_result.save_calibration_success = save_calibration_res.success
+                goal_result.save_calibration_filepath = save_calibration_res.filepath
+
+        # Check if the samples should be saved to disk
+        if goal_request.save_samples:
+            self.get_logger().info("Saving samples to disk...")
+            save_samples_req = easy_handeye2_msgs.srv.SaveSamples.Request()
+            save_samples_res = easy_handeye2_msgs.srv.SaveSamples.Response()
+            save_samples_res= self.save_samples(save_samples_req, save_samples_res)
+            goal_result.save_samples_success = save_samples_res.success
+
+        # Do one final check that the action is still going before signaling that it is complete
         with self._take_multiple_samples_action_goal_lock:
             # Check that the action is not aborted right before the final result is published
             if not goal_handle.is_active:
@@ -331,7 +362,7 @@ class HandeyeServer(rclpy.node.Node):
 
         # Return result message
         self.get_logger().info("Multiple samples action succeeded!")
-        return easy_handeye2_msgs.action.TakeMultipleSamples.Result(samples=self._retrieve_sample_list())
+        return goal_result
 
     def take_multiple_samples_cancel_callback(self, _) -> CancelResponse:
         """Any action cancel requests are accepted, the next trigger of the execute function will stop."""

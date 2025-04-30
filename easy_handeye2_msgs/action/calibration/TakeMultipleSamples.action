@@ -7,7 +7,7 @@
 float64 sample_frequency
 
 # max_samples and max_duration are used to determine how many samples are taken at most.
-# At least one of them must be set to collect any samples.
+# IMPORTANT: At least one of them must be set to collect any samples.
 # Whichever parameter results in the least amount of samples is used.
 # E.g. if sample_frequency * max_duration < max_samples, then max_duration limits the number of samples.
 # E.g. if sample_frequency * max_samples > max_duration, then max_samples limits the number of samples.
@@ -20,17 +20,40 @@ uint32 max_samples 0
 # Set to 0 (the default) to disable.
 float64 max_duration 0.0
 
+# How much time to wait before starting to execute the action after the request is accepted
+float64 defer_action_time 0.0
+
 # Whether to clear current samples before starting to take these multiple samples
 bool clear_samples_before false
 
-# How much time to wait before starting to execute the action after the request is accepted
-float64 defer_action_time 0.0
+# Whether to compute the calibration once all samples are taken
+bool compute_calibration false
+
+# Whether to save the calibration to disk after it is computed
+# Only has effect if compute_calibration is true
+bool save_calibration false
+
+# Whether to save samples to disk after all samples are taken
+bool save_samples false
 
 ---
 ### Goal response
 
 # List of all samples taken.
 SampleList samples
+
+# Calibration result (only set to true if compute_calibration is true and the calibration was actually valid)
+bool calibration_valid
+
+# Calibration result (only set if compute_calibration is true)
+HandeyeCalibration calibration_result
+
+# Whether the calibration write to disk is successful (only set if compute_calibration AND save_calibration are true)
+bool save_calibration_success
+std_msgs/String save_calibration_filepath
+
+# Whether the sample writes to disk were successful (only set if save_samples is true)
+bool save_samples_success
 
 ---
 ### Feedback response
