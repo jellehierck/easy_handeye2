@@ -1,6 +1,6 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.conditions import LaunchConfigurationEquals
+from launch.conditions import LaunchConfigurationEquals, IfCondition
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 
@@ -30,9 +30,17 @@ def generate_launch_description():
         'robot_effector_frame': LaunchConfiguration('robot_effector_frame'),
     }])
 
+    use_rqt_calibrator_arg = DeclareLaunchArgument(
+        name="use_rqt_calibrator",
+        default_value="true",
+        description="(bool) Whether to start the easy_handeye2 RQT calibrator.",
+        choices=["true", "false"],
+    )
+
     handeye_rqt_calibrator = Node(package='easy_handeye2', executable='rqt_calibrator.py',
                                   name='handeye_rqt_calibrator',
                                   # arguments=['--ros-args', '--log-level', 'debug'],
+                                  condition=IfCondition(LaunchConfiguration(use_rqt_calibrator_arg.name)),
                                   parameters=[{
                                       'name': LaunchConfiguration('name'),
                                       'calibration_type': LaunchConfiguration('calibration_type'),
@@ -52,5 +60,6 @@ def generate_launch_description():
         node_dummy_calib_eih,
         node_dummy_calib_eob,
         handeye_server,
+        use_rqt_calibrator_arg,
         handeye_rqt_calibrator,
     ])
