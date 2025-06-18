@@ -310,8 +310,10 @@ class HandeyeServer(rclpy.node.Node):
             self.get_logger().info(f"Taking sample {sample_nr}/{total_nr_samples}")
             self.sampler.take_sample()
 
+            last_sample = list(self._retrieve_sample_list().samples)[-1]  # Last taken sample
             feedback_msg = easy_handeye2_msgs.action.TakeMultipleSamples.Feedback(
-                partial_samples=self._retrieve_sample_list()
+                last_sample=last_sample,
+                last_sample_nr=sample_nr,
             )
             goal_handle.publish_feedback(feedback_msg)
 

@@ -58,4 +58,8 @@ bool save_samples_success
 ---
 ### Feedback response
 
-SampleList partial_samples
+# Last sample taken
+Sample last_sample
+
+# Sample number of last sample
+uint32 last_sample_nr
